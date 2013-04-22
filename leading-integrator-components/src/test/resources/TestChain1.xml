@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<chain input-channel="input">
+		<beans:bean class="cn.ls.integrator.components.TestRouter">
+			<beans:property name="filterListStr" value="filter1,filter2,filter3" />
+		</beans:bean>
+	</chain>
+	<chain input-channel="filter1">
+		<beans:bean class="cn.ls.integrator.components.TestComponent1"></beans:bean>
+	</chain>
+	<chain input-channel="filter2">
+		<beans:bean class="cn.ls.integrator.components.TestComponent2"></beans:bean>
+	</chain>
+	<chain input-channel="filter3">
+		<beans:bean class="cn.ls.integrator.components.TestComponent3"></beans:bean>
+	</chain>
+</beans:beans>

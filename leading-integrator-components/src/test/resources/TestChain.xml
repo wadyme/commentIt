@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<chain input-channel="input">
+		<beans:bean class="cn.ls.intergrator.components.JdbcSourceComponent">
+			<beans:property name="dataSource" ref="dataSource" />
+			<beans:property name="tableName" value="test_person" />
+			<beans:property name="timestampField" value="timestampField" />
+			<beans:property name="pkField" value="id" />
+			<beans:property name="mongoDataStore" ref="mongoDatastore" />
+			<beans:property name="outputChannel" ref="outputChannel" />
+		</beans:bean>
+		<beans:bean class="cn.ls.intergrator.components.TongTargetComponent">
+			<beans:property name="QcuName" value="qcu1" />
+			<beans:property name="QName" value="lq" />
+		</beans:bean>
+
+		<beans:bean class="cn.ls.intergrator.components.TongSourceComponent">
+			<beans:property name="QcuName" value="qcu1" />
+			<beans:property name="QName" value="lq" />
+		</beans:bean>
+
+		<beans:bean class="cn.ls.intergrator.components.JdbcTargetComponent">
+			<beans:property name="dataSource" ref="bizfuseDataSource" />
+			<beans:property name="encountered" value="false" />
+		</beans:bean>
+
+		<beans:bean class="cn.ls.intergrator.components.CatchExceptionComponent">
+			<beans:property name="mongoDatastore" ref="mongoDatastore" />
+			<beans:property name="outputChannel" ref="outputChannel" />
+		</beans:bean>
+
+	</chain>
+
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<beans:property name="url"
+			value="jdbc:oracle:thin:@127.0.0.1:1521:orcl" />
+		<beans:property name="username" value="dtep" />
+		<beans:property name="password" value="dtep" />
+		<beans:property name="maxActive" value="100" />
+		<beans:property name="maxWait" value="1000" />
+		<beans:property name="poolPreparedStatements" value="true" />
+		<beans:property name="defaultAutoCommit" value="true" />
+	</beans:bean>
+
+	<beans:bean id="bizfuseDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<beans:property name="url"
+			value="jdbc:oracle:thin:@127.0.0.1:1521:orcl" />
+		<beans:property name="username" value="bizfuse" />
+		<beans:property name="password" value="bizfuse" />
+		<beans:property name="maxActive" value="100" />
+		<beans:property name="maxWait" value="1000" />
+		<beans:property name="poolPreparedStatements" value="true" />
+		<beans:property name="defaultAutoCommit" value="true" />
+	</beans:bean>
+	<beans:bean id="outputChannel"
+		class="org.springframework.integration.channel.QueueChannel" />
+
+
+	<beans:bean id="mongo" class="com.mongodb.Mongo">
+		<beans:constructor-arg index="0" value="localhost" />
+		<beans:constructor-arg index="1" value="27017" />
+	</beans:bean>
+	<beans:bean id="morphia" class="com.google.code.morphia.Morphia" />
+	<beans:bean id="mongoDatastore" class="cn.ls.intergrator.components.mongo.MongoDataStore">
+		<beans:constructor-arg ref="morphia" />
+		<beans:constructor-arg ref="mongo" />
+		<beans:constructor-arg value="test" />
+	</beans:bean>
+</beans:beans>

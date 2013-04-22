@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-abysscode" default="generate-pom">
+
+	<property file="${basedir}/build.properties"/>
+	
+	<condition property="maven.extension" value=".bat" else="">
+		<os family="windows"/>
+	</condition>
+	<property name="mvn.exe" value="mvn${maven.extension}"/>	
+
+	<target name="all" depends="gpom, mvn-install, publish"/>
+	
+	<target name="install" depends="gpom, mvn-install"/>
+	
+	<target name="gpom" depends="do-generate-pom">
+
+	</target>
+	
+	<target name="do-generate-pom">
+		<replaceregexp  match="&lt;version>.*?&lt;/version>"
+					   replace="&lt;version>${version}&lt;/version>" >	
+			<fileset dir="" includes="**/pom.xml"/>
+		</replaceregexp>
+		<!--
+		<replaceregexp  match="&lt;bizfuse.demp.version>.*?&lt;/bizfuse.demp.version>"
+					   replace="&lt;bizfuse.demp.version>${version}&lt;/bizfuse.demp.version>" >	
+			<fileset dir="" includes="**/pom.xml"/>
+		</replaceregexp>	
+-->		
+	</target>
+	
+	
+	<target name="mvn-install">
+		<exec executable="${mvn.exe}" failonerror="true">
+		  <env key="MAVEN_TERMINATE_CMD" value="on" />
+		  <arg line="clean install  -Dmaven.test.skip=true"/>
+		</exec>
+	</target>
+	
+	<target name="package">
+		<exec executable="${mvn.exe}" failonerror="true">
+		  <env key="MAVEN_TERMINATE_CMD" value="on" />
+		  <arg line="clean package"/>
+		</exec>
+	</target>
+	
+	<target name="publish">
+		<exec executable="${mvn.exe}" failonerror="true">
+		  <env key="MAVEN_TERMINATE_CMD" value="on" />
+		  <arg line="deploy -Dmaven.test.skip=true"/>
+		</exec>
+		<!--
+		<copy todir="${repository.remote}">
+		  <fileset dir="${repository.local}" />
+		</copy>
+		-->
+	</target>
+
+</project>

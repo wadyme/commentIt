@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<publish-subscribe-channel id="pubsubChannel" apply-sequence="true"/>
+	<chain input-channel="input" output-channel="pubsubChannel">
+		<beans:bean class="cn.ls.integrator.components.TestComponent4"></beans:bean>
+	</chain>
+	<chain input-channel="pubsubChannel" output-channel="nullChannel">
+		<beans:bean class="cn.ls.integrator.components.MessageFilterComponent">
+			<beans:property name="expression" value="payload.name.matches('^test1[\S]*$')"/>
+		</beans:bean>
+		<beans:bean class="cn.ls.integrator.components.TestComponent1"></beans:bean>
+	</chain>
+	<chain input-channel="pubsubChannel" output-channel="nullChannel">
+		<beans:bean class="cn.ls.integrator.components.MessageFilterComponent">
+			<beans:property name="expression" value="payload.name.matches('^test2[\S]*$')"/>
+		</beans:bean>
+		<beans:bean class="cn.ls.integrator.components.TestComponent2"></beans:bean>
+	</chain>
+	<chain input-channel="filter1" output-channel="nullChannel">
+		<beans:bean class="cn.ls.integrator.components.MessageFilterComponent">
+			<beans:property name="expression" value="payload.name.equals('test3')"/>
+		</beans:bean>
+		<beans:bean class="cn.ls.integrator.components.TestComponent3"></beans:bean>
+	</chain>
+</beans:beans>

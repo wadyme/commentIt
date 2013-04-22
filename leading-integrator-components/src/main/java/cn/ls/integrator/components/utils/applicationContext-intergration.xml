@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd">
+	
+	<beans:bean id="dbDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<beans:property name="url"
+			value="jdbc:oracle:thin:@127.0.0.1:1521:orcl" />
+		<beans:property name="username" value="DEMP" />
+		<beans:property name="password" value="DEMP" />
+		<beans:property name="maxActive" value="100" />
+		<beans:property name="maxWait" value="1000" />
+		<beans:property name="poolPreparedStatements" value="true" />
+		<beans:property name="defaultAutoCommit" value="true" />
+	</beans:bean>
+
+	
+	
+	<bean id="mongo" class="com.mongodb.Mongo">
+		<constructor-arg index="0" value="127.0.0.1"/>
+		<constructor-arg index="1" value="27017"/>
+	</bean>
+	<bean id="morphia" class="com.google.code.morphia.Morphia"/>
+	<bean id="mongoDatastore" class="cn.ls.integrator.components.mongo.MongoDataStore">  
+		<constructor-arg ref="morphia"/>  
+		<constructor-arg ref="mongo"/>  
+		<constructor-arg value="test"/>  
+	</bean>  
+    
+  
+	
+</beans>
+
